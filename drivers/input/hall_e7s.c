@@ -52,6 +52,7 @@ static irqreturn_t hall_interrupt(int irq, void *data)
 		hall_info->hall_switch_state = hall_gpio;
 		pr_err("Macle hall report key s ");
 	}
+
 	if (hall_gpio)
 	{
 		input_report_switch(hall_info->ipdev, SW_LID, 0);
@@ -84,29 +85,6 @@ static int hall_power_on(struct device *pdev)
 	int ret = 0;
 	// struct regulator *hall_vdd;
 	struct regulator *hall_vio;
-#if 0
-	hall_vdd = regulator_get(pdev, "vdd");
-	if (IS_ERR(hall_vdd)) {
-		ret = -1;
-		dev_err(pdev, "Regulator get failed vdd ret=%d\n", ret);
-		return ret;
-	}
-		
-	if (regulator_count_voltages(hall_vdd) > 0) {
-		ret = regulator_set_voltage(hall_vdd, 2850000, 2850000);
-		if (ret) {
- 			dev_err(pdev, "Regulator set_vtg failed vdd ret=%d\n", ret);
-			goto reg_vdd_put;
-		}
-	}
-
-	ret = regulator_enable(hall_vdd);		
-	if (ret) {
-		dev_err(pdev, "Regulator vdd enable failed ret=%d\n", ret);
-		return ret;
-	}
-#endif
-#if 1
 	hall_vio = regulator_get(pdev, "vdd-io");
 	if (IS_ERR(hall_vio))
 	{
@@ -131,8 +109,6 @@ static int hall_power_on(struct device *pdev)
 		dev_err(pdev, "Regulator vio enable failed ret=%d\n", ret);
 		return ret;
 	}
-#endif
-
 	return ret;
 
 reg_vio_put:
@@ -146,13 +122,10 @@ static ssize_t hall_state_show(struct class *class,
 {
 	int state;
 	if (global_hall_info->hall_switch_state)
-	{
 		state = 3;
-	}
 	else
-	{
 		state = 2;
-	}
+
 	pr_err("Macle hall_state_show state = %d, custome_state=%d\n", global_hall_info->hall_switch_state, state);
 	return sprintf(buf, "%d\n", state);
 }
@@ -214,7 +187,7 @@ static int hall_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, hall_info);
 
-	/*input system config*/
+	/* input system config */
 	hall_info->ipdev = input_allocate_device();
 	if (!hall_info->ipdev)
 	{
@@ -234,7 +207,7 @@ static int hall_probe(struct platform_device *pdev)
 
 	hall_power_on(&pdev->dev);
 
-	/*interrupt config*/
+	/* interrupt config */
 	if (gpio_is_valid(hall_info->irq_gpio))
 	{
 		rc = gpio_request(hall_info->irq_gpio, "hall-switch-gpio");
