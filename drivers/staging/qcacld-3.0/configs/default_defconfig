@@ -127,7 +127,7 @@ ifeq ($(CONFIG_WLAN_SYSFS), y)
 	CONFIG_WLAN_DL_MODES := y
 endif
 
-CONFIG_WLAN_POWER_DEBUG := y
+CONFIG_WLAN_POWER_DEBUG := n
 #Enable Beacon Reception Stats
 CONFIG_FEATURE_BECN_STATS := y
 endif
@@ -283,13 +283,6 @@ CONFIG_LFR_SUBNET_DETECTION := y
 # Flag to enable MCC to SCC switch feature
 CONFIG_MCC_TO_SCC_SWITCH := y
 
-ifeq ($(CONFIG_SLUB_DEBUG), y)
-	# Enable Obj Mgr Degug services if slub build
-	CONFIG_WLAN_OBJMGR_DEBUG:= y
-	CONFIG_MPC_UT_FRAMEWORK := y
-	CONFIG_LOCK_STATS_ON:= y
-endif
-
 ifeq (y,$(findstring y,$(CONFIG_QCA_WIFI_SDIO) $(CONFIG_HIF_USB)))
 CONFIG_HL_DP_SUPPORT := y
 else
@@ -403,18 +396,11 @@ ifneq ($(TARGET_BUILD_VARIANT),user)
 endif
 
 #Enable WLAN/Power debugfs feature only if debug_fs is enabled
-ifeq ($(CONFIG_DEBUG_FS), y)
-       # Flag to enable debugfs. Depends on CONFIG_DEBUG_FS in kernel
-       # configuration.
-       CONFIG_WLAN_DEBUGFS := y
-
-       CONFIG_WLAN_MWS_INFO_DEBUGFS := y
-endif
 
 # Feature flags which are not (currently) configurable via Kconfig
 
 #Whether to build debug version
-BUILD_DEBUG_VERSION := y
+BUILD_DEBUG_VERSION := n
 
 #Enable this flag to build driver in diag version
 BUILD_DIAG_VERSION := y
@@ -431,10 +417,10 @@ else
 endif
 
 # Compile all log levels by default
-CONFIG_WLAN_LOG_FATAL := y
-CONFIG_WLAN_LOG_ERROR := y
-CONFIG_WLAN_LOG_WARN := y
-CONFIG_WLAN_LOG_INFO := y
+CONFIG_WLAN_LOG_FATAL := n
+CONFIG_WLAN_LOG_ERROR := n
+CONFIG_WLAN_LOG_WARN := n
+CONFIG_WLAN_LOG_INFO := n
 
 #Enable OL debug and wmi unified functions
 CONFIG_ATH_PERF_PWR_OFFLOAD := y
@@ -680,7 +666,7 @@ CONFIG_WLAN_LOGGING_BUFFERS_DYNAMICALLY := n
 CONFIG_WLAN_DFS_STATIC_MEM_ALLOC := y
 
 #Flag to enable HTC credit history feature
-CONFIG_FEATURE_HTC_CREDIT_HISTORY := y
+CONFIG_FEATURE_HTC_CREDIT_HISTORY := n
 
 #Flag to enable MTRACE feature
 CONFIG_TRACE_RECORD_FEATURE := y
@@ -848,9 +834,6 @@ endif
 
 ifeq ($(CONFIG_ARCH_SDXPRAIRIE), y)
 	CONFIG_FEATURE_MONITOR_MODE_SUPPORT := n
-	ifneq ($(CONFIG_SLUB_DEBUG), y)
-		CONFIG_DP_TRACE := n
-	endif
 
 	CONFIG_DIRECT_BUF_RX_ENABLE := n
 	CONFIG_WMI_DBR_SUPPORT := n
@@ -858,11 +841,6 @@ endif
 
 ifneq ($(CONFIG_HIF_USB), y)
 CONFIG_WLAN_LOGGING_SOCK_SVC := y
-endif
-
-ifneq ($(TARGET_BUILD_VARIANT),user)
-CONFIG_DESC_DUP_DETECT_DEBUG := y
-CONFIG_DEBUG_RX_RING_BUFFER := y
 endif
 
 ifeq (y,$(findstring y,$(CONFIG_CNSS) $(CONFIG_CNSS_MODULE)))
