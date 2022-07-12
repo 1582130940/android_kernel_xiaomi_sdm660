@@ -2138,25 +2138,13 @@ s32 gtp_send_chr_cfg(struct i2c_client *client)
 	return ret;
 }
 
-extern bool check_charge1(void)
-{
-		return 1;
-}
-bool gtp_get_charger_status1(void)
-{
-	bool g_chargerState = 0;
-	g_chargerState = check_charge1();
-	return g_chargerState;
-}
 void gtp_charger_updateconfig1(struct goodix_ts_data *ts, s32 dir_update)
 {
-	u32 chr_status = 0;
+	u32 chr_status = 1;
 	static u8 chr_pluggedin;
 
-	chr_status = gtp_get_charger_status1();
-
 retry:
-	if (chr_status) { /* charger plugged in */
+	if (chr_status >= 1) { /* charger plugged in */
 		if (!chr_pluggedin || dir_update) {
 			GTP_INFO("Update status for Charger Plugin");
 			if (gtp_send_chr_cfg(i2c_connect_client) < 0) {
