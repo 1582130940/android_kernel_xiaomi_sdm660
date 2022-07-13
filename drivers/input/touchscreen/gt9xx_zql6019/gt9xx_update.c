@@ -82,8 +82,8 @@ struct st_update_msg
 
 struct st_update_msg update_msg;
 
-u16 show_len;
-u16 total_len;
+static u16 show_len;
+static u16 total_len;
 extern int update_flag;
 static u8 gup_burn_fw_gwake_section(struct i2c_client *client,
 									u8 *fw_section, u16 start_addr,
@@ -279,7 +279,7 @@ static u8 gup_get_ic_fw_msg(struct i2c_client *client)
 	return SUCCESS;
 }
 
-s32 gup_enter_update_mode(struct i2c_client *client)
+static s32 gup_enter_update_mode(struct i2c_client *client)
 {
 	s32 ret = -1;
 	s32 retry = 0;
@@ -342,7 +342,7 @@ s32 gup_enter_update_mode(struct i2c_client *client)
 	return ret;
 }
 
-void gup_leave_update_mode(struct i2c_client *client)
+static void gup_leave_update_mode(struct i2c_client *client)
 {
 	struct goodix_ts_data *ts = i2c_get_clientdata(client);
 
@@ -1916,7 +1916,7 @@ static int gup_update_condition_check(struct goodix_ts_data *ts)
 
 	return 0;
 }
-s32 gup_update_proc(void *dir)
+static s32 gup_update_proc(void *dir)
 {
 	s32 ret = 0;
 	s32 update_ret = FAIL;
@@ -2100,7 +2100,7 @@ file_fail:
 	}
 }
 
-u8 gup_init_update_proc(struct goodix_ts_data *ts)
+static u8 gup_init_update_proc(struct goodix_ts_data *ts)
 {
 	struct task_struct *thread = NULL;
 
@@ -2120,17 +2120,17 @@ u8 gup_init_update_proc(struct goodix_ts_data *ts)
 #ifdef CONFIG_TOUCHSCREEN_GT9XX_CHARGER_SENDCFG
 extern u8 config_charger[GTP_CONFIG_MAX_LENGTH + GTP_ADDR_LENGTH];
 
-s32 gtp_send_chr_cfg(struct i2c_client *client)
+static s32 gtp_send_chr_cfg(struct i2c_client *client)
 {
 	s32 ret = 2;
 
 #if GTP_DRIVER_SEND_CFG
 	s32 retry = 0;
-	GTP_INFO("Driver send charger config.");
+	GTP_DEBUG("Driver send charger config.");
 	for (retry = 0; retry < 5; retry++) {
 		ret = gtp_i2c_write(client, config_charger, GTP_CONFIG_MAX_LENGTH + GTP_ADDR_LENGTH);
 		if (ret > 0) {
-			GTP_INFO("Driver send charger success.\n");
+			GTP_DEBUG("Driver send charger success.\n");
 			break;
 		}
 	}
@@ -2138,7 +2138,7 @@ s32 gtp_send_chr_cfg(struct i2c_client *client)
 	return ret;
 }
 
-void gtp_charger_updateconfig1(struct goodix_ts_data *ts, s32 dir_update)
+static void gtp_charger_updateconfig1(struct goodix_ts_data *ts, s32 dir_update)
 {
 	u32 chr_status = 1;
 	static u8 chr_pluggedin;
@@ -2146,7 +2146,7 @@ void gtp_charger_updateconfig1(struct goodix_ts_data *ts, s32 dir_update)
 retry:
 	if (chr_status >= 1) { /* charger plugged in */
 		if (!chr_pluggedin || dir_update) {
-			GTP_INFO("Update status for Charger Plugin");
+			GTP_DEBUG("Update status for Charger Plugin");
 			if (gtp_send_chr_cfg(i2c_connect_client) < 0) {
 				GTP_ERROR("Send charger config failed.");
 				goto retry;
@@ -2157,7 +2157,7 @@ retry:
 		}
 	} else { /* charger plugged out */
 		if (chr_pluggedin || dir_update) {
-			GTP_INFO("Update status for normal Plugout");
+			GTP_DEBUG("Update status for normal Plugout");
 			if (gtp_send_cfg(i2c_connect_client) < 0) {
 				GTP_ERROR("Send normal config failed.");
 				goto retry;
@@ -2168,7 +2168,7 @@ retry:
 		}
 	}
 }
-s32 gup_charger_proc(void *s)
+static s32 gup_charger_proc(void *s)
 {
 	int ret;
 	struct goodix_ts_data *ts = i2c_get_clientdata(i2c_connect_client);
@@ -2183,7 +2183,7 @@ s32 gup_charger_proc(void *s)
 	return 0;
 }
 
-u8 gup_init_charger_proc(struct goodix_ts_data *ts)
+static u8 gup_init_charger_proc(struct goodix_ts_data *ts)
 {
 	struct task_struct *thread = NULL;
 
