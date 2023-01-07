@@ -293,8 +293,10 @@
 /* BATT_INFO_PEEK_MUX1 */
 #define PEEK_MUX1_BIT				BIT(0)
 
+#ifdef CONFIG_MACH_XIAOMI_CLOVER
 #define MEM_IF_MEM_ARB_CFG(chip)		((chip->mem_if_base) + 0x40)
 #define MEM_GNT_BIT				BIT(2)
+#endif
 
 #define BATT_INFO_PEEK_MUX4(chip)		(chip->batt_info_base + 0xEE)
 #define ALG_ACTIVE_PEEK_CFG			0xAC
@@ -368,8 +370,10 @@
 #define ADDR_KIND_BIT				BIT(1)
 #define DMA_CLEAR_LOG_BIT			BIT(0)
 
+#ifdef CONFIG_MACH_XIAOMI_CLOVER
 /* MEM_IF_REQ */
 #define MEM_IF_ARB_REQ_BIT			BIT(0)
+#endif
 
 /* FG_DMAx */
 #define FG_DMA0_BASE				0x4800
