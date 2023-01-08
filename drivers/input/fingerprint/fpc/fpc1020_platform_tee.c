@@ -455,14 +455,14 @@ static ssize_t handle_wakelock_cmd(struct device *dev,
 				 min(count, strlen(RELEASE_WAKELOCK_W_V)))) {
 		if (fpc1020->nbr_irqs_received_counter_start ==
 			fpc1020->nbr_irqs_received) {
-			__pm_relax(&fpc1020->ttw_wl);
+			__pm_relax(fpc1020->ttw_wl);
 		} else {
 			dev_dbg(dev, "Ignore releasing of wakelock %d != %d",
 					fpc1020->nbr_irqs_received_counter_start,
 					fpc1020->nbr_irqs_received);
 		}
 	} else if (!strncmp(buf, RELEASE_WAKELOCK, min(count, strlen(RELEASE_WAKELOCK)))) {
-		__pm_relax(&fpc1020->ttw_wl);
+		__pm_relax(fpc1020->ttw_wl);
 	} else if (!strncmp(buf, START_IRQS_RECEIVED_CNT,
 					  min(count, strlen(START_IRQS_RECEIVED_CNT)))) {
 		fpc1020->nbr_irqs_received_counter_start =
@@ -776,7 +776,7 @@ static int fpc1020_probe(struct platform_device *pdev)
 	}
 
 	mutex_init(&fpc1020->lock);
-	wakeup_source_init(&fpc1020->ttw_wl, "fpc_ttw_wl");
+	fpc1020->ttw_wl = wakeup_source_register(NULL, "fpc_ttw_wl");
 
 	rc = sysfs_create_group(&dev->kobj, &attribute_group);
 	if (rc) {
@@ -827,7 +827,7 @@ static int fpc1020_remove(struct platform_device *pdev)
 	fb_unregister_client(&fpc1020->fb_notifier);
 	sysfs_remove_group(&pdev->dev.kobj, &attribute_group);
 	mutex_destroy(&fpc1020->lock);
-	wakeup_source_trash(&fpc1020->ttw_wl);
+	wakeup_source_unregister(fpc1020->ttw_wl);
 	(void)vreg_setup(fpc1020, "vdd_ana", false);
 	(void)vreg_setup(fpc1020, "vdd_io", false);
 	(void)vreg_setup(fpc1020, "vcc_spi", false);
