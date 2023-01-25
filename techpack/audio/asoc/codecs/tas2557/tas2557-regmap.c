@@ -1104,7 +1104,6 @@ static const struct regmap_config tas2557_i2c_regmap = {
  * should implement hardware reset functionality
  */
 atomic_t tas2557_ref_count;
-int is_d9p;
 static int tas2557_i2c_probe(struct i2c_client *pClient,
 							 const struct i2c_device_id *pID)
 {
@@ -1290,7 +1289,7 @@ static int tas2557_i2c_probe(struct i2c_client *pClient,
 	pTAS2557->mtimer.function = temperature_timer_func;
 	INIT_WORK(&pTAS2557->mtimerwork, timer_work_routine);
 
-		nResult = request_firmware_nowait(THIS_MODULE, 1, TAS2557_D9P_FW_NAME,
+		nResult = request_firmware_nowait(THIS_MODULE, 1, TAS2557_FW_NAME,
 										  pTAS2557->dev, GFP_KERNEL, pTAS2557, tas2557_fw_ready);
 
 err:
