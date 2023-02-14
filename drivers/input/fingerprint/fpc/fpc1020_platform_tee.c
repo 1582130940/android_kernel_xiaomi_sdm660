@@ -708,10 +708,7 @@ static int __always_inline fpc_fb_notif_callback(struct notifier_block *nb,
 	struct fb_event *evdata = data;
 	unsigned int blank;
 
-	if (!fpc1020)
-		return 0;
-
-	if (val != FB_EVENT_BLANK)
+	if (!fpc1020 || val != FB_EVENT_BLANK)
 		return 0;
 
 	pr_debug("[info] %s value = %d\n", __func__, (int)val);
@@ -730,6 +727,7 @@ static int __always_inline fpc_fb_notif_callback(struct notifier_block *nb,
 			break;
 		}
 	}
+
 	return NOTIFY_OK;
 }
 static struct notifier_block fpc_notif_block = {
