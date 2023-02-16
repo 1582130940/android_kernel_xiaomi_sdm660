@@ -3722,7 +3722,7 @@ static int __mdss_fb_perform_commit(struct msm_fb_data_type *mfd)
 	struct msm_sync_pt_data *sync_pt_data = &mfd->mdp_sync_pt_data;
 	struct msm_fb_backup_type *fb_backup = &mfd->msm_fb_backup;
 	int ret = -ENOTSUPP;
-	u32 new_dsi_mode, dynamic_dsi_switch = 0;
+	u32 new_dsi_mode = 0, dynamic_dsi_switch = 0;
 
 	if (mfd->panel_info->panel_dead) {
 		pr_debug("Panel dead, Signal fence and exit commit\n");
@@ -4342,7 +4342,7 @@ static int mdss_fb_handle_buf_sync_ioctl(struct msm_sync_pt_data *sync_pt_data,
 				 struct mdp_buf_sync *buf_sync)
 {
 	int i, ret = 0;
-	int acq_fen_fd[MDP_MAX_FENCE_FD];
+	int acq_fen_fd[MDP_MAX_FENCE_FD] = { 0 };
 	struct mdss_fence *fence, *rel_fence, *retire_fence;
 	int rel_fen_fd;
 	int retire_fen_fd;
