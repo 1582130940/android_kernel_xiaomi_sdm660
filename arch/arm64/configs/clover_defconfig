@@ -1629,80 +1629,7 @@ CONFIG_QCOM_EBI2=y
 #
 # CONFIG_CONNECTOR is not set
 # CONFIG_GNSS is not set
-CONFIG_MTD=y
-# CONFIG_MTD_TESTS is not set
-# CONFIG_MTD_REDBOOT_PARTS is not set
-# CONFIG_MTD_CMDLINE_PARTS is not set
-# CONFIG_MTD_AFS_PARTS is not set
-CONFIG_MTD_OF_PARTS=m
-# CONFIG_MTD_AR7_PARTS is not set
-
-#
-# Partition parsers
-#
-
-#
-# User Modules And Translation Layers
-#
-# CONFIG_MTD_BLOCK is not set
-# CONFIG_MTD_BLOCK_RO is not set
-# CONFIG_FTL is not set
-# CONFIG_NFTL is not set
-# CONFIG_INFTL is not set
-# CONFIG_RFD_FTL is not set
-# CONFIG_SSFDC is not set
-# CONFIG_SM_FTL is not set
-# CONFIG_MTD_OOPS is not set
-# CONFIG_MTD_SWAP is not set
-# CONFIG_MTD_PARTITIONED_MASTER is not set
-
-#
-# RAM/ROM/Flash chip drivers
-#
-# CONFIG_MTD_CFI is not set
-# CONFIG_MTD_JEDECPROBE is not set
-CONFIG_MTD_MAP_BANK_WIDTH_1=y
-CONFIG_MTD_MAP_BANK_WIDTH_2=y
-CONFIG_MTD_MAP_BANK_WIDTH_4=y
-CONFIG_MTD_CFI_I1=y
-CONFIG_MTD_CFI_I2=y
-# CONFIG_MTD_RAM is not set
-# CONFIG_MTD_ROM is not set
-# CONFIG_MTD_ABSENT is not set
-
-#
-# Mapping drivers for chip access
-#
-# CONFIG_MTD_COMPLEX_MAPPINGS is not set
-# CONFIG_MTD_INTEL_VR_NOR is not set
-# CONFIG_MTD_PLATRAM is not set
-
-#
-# Self-contained MTD device drivers
-#
-# CONFIG_MTD_PMC551 is not set
-# CONFIG_MTD_DATAFLASH is not set
-# CONFIG_MTD_MCHP23K256 is not set
-# CONFIG_MTD_SST25L is not set
-# CONFIG_MTD_SLRAM is not set
-# CONFIG_MTD_PHRAM is not set
-# CONFIG_MTD_MTDRAM is not set
-# CONFIG_MTD_BLOCK2MTD is not set
-
-#
-# Disk-On-Chip Device Drivers
-#
-# CONFIG_MTD_DOCG3 is not set
-# CONFIG_MTD_ONENAND is not set
-# CONFIG_MTD_NAND is not set
-# CONFIG_MTD_SPI_NAND is not set
-
-#
-# LPDDR & LPDDR2 PCM memory drivers
-#
-# CONFIG_MTD_LPDDR is not set
-# CONFIG_MTD_SPI_NOR is not set
-# CONFIG_MTD_UBI is not set
+# CONFIG_MTD is not set
 CONFIG_DTC=y
 CONFIG_OF=y
 # CONFIG_OF_UNITTEST is not set
@@ -3313,11 +3240,7 @@ CONFIG_REGULATOR_RPM_SMD=y
 CONFIG_REGULATOR_SPM=y
 CONFIG_REGULATOR_STUB=y
 # CONFIG_REGULATOR_PM8008 is not set
-CONFIG_RC_CORE=y
-# CONFIG_RC_MAP is not set
-# CONFIG_LIRC is not set
-# CONFIG_RC_DECODERS is not set
-# CONFIG_RC_DEVICES is not set
+# CONFIG_RC_CORE is not set
 CONFIG_MEDIA_SUPPORT=y
 
 #
@@ -3368,12 +3291,10 @@ CONFIG_USB_VIDEO_CLASS_INPUT_EVDEV=y
 #
 # CONFIG_VIDEO_AU0828 is not set
 # CONFIG_VIDEO_CX231XX is not set
-# CONFIG_VIDEO_TM6000 is not set
 
 #
 # Digital TV USB devices
 #
-# CONFIG_DVB_USB is not set
 # CONFIG_DVB_USB_V2 is not set
 # CONFIG_DVB_TTUSB_BUDGET is not set
 # CONFIG_DVB_TTUSB_DEC is not set
@@ -3475,7 +3396,6 @@ CONFIG_VIDEOBUF2_VMALLOC=y
 #
 CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
 CONFIG_MEDIA_ATTACH=y
-CONFIG_VIDEO_IR_I2C=y
 
 #
 # Audio decoders, processors and mixers
@@ -4432,7 +4352,6 @@ CONFIG_LEDS_QPNP_FLASH_V2=y
 CONFIG_LEDS_TRIGGERS=y
 # CONFIG_LEDS_TRIGGER_TIMER is not set
 # CONFIG_LEDS_TRIGGER_ONESHOT is not set
-# CONFIG_LEDS_TRIGGER_MTD is not set
 # CONFIG_LEDS_TRIGGER_HEARTBEAT is not set
 # CONFIG_LEDS_TRIGGER_BACKLIGHT is not set
 # CONFIG_LEDS_TRIGGER_CPU is not set
@@ -5648,7 +5567,6 @@ CONFIG_SDCARD_FS=y
 # CONFIG_BEFS_FS is not set
 # CONFIG_BFS_FS is not set
 # CONFIG_EFS_FS is not set
-# CONFIG_JFFS2_FS is not set
 # CONFIG_CRAMFS is not set
 # CONFIG_SQUASHFS is not set
 # CONFIG_VXFS_FS is not set
