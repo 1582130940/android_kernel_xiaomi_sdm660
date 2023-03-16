@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ */
+
 qcom,ascent_3450mah {
 	/* Ascent_wConn_3450mAh_Fresh_averaged_MasterSlave_Feb7th2018 */
 	qcom,max-voltage-uv = <4350000>;
