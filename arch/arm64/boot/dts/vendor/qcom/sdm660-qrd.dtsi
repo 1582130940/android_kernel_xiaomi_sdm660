@@ -294,4 +294,3 @@
 	qcom,wsa-devs = <&wsa881x_211>, <&wsa881x_213>;
 	qcom,wsa-aux-dev-prefix = "SpkrLeft", "SpkrLeft";
 };
-
