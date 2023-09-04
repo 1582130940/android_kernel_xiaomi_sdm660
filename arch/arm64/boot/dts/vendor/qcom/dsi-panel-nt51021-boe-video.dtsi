@@ -321,8 +321,8 @@
 		qcom,mdss-dsi-init-delay-us = <5000>;
 		qcom,mdss-dsi-post-init-delay = <1>;
 		qcom,mdss-dsi-force-clock-lane-hs;
-		qcom,mdss-pan-physical-width-dimension = <107>;
-		qcom,mdss-pan-physical-height-dimension = <172>;
+		qcom,mdss-pan-physical-width-dimension = <108>;
+		qcom,mdss-pan-physical-height-dimension = <173>;
 		/* Enable ULPS during idle PC */
 		qcom,ulps-enabled;
 		/* Enable phy-poweroff */
