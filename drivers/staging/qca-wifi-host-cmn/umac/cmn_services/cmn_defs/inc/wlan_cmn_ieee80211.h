@@ -1,6 +1,5 @@
 /*
  * Copyright (c) 2017-2020 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -135,6 +134,7 @@
 #define WLAN_IBSS_IE_MAX_LEN                     2
 #define WLAN_REQUEST_IE_MAX_LEN                  255
 #define WLAN_RM_CAPABILITY_IE_MAX_LEN            5
+#define WLAN_RNR_IE_MIN_LEN                      5
 
 /* Wide band channel switch IE length */
 #define WLAN_WIDE_BW_CHAN_SWITCH_IE_LEN          3
@@ -190,6 +190,19 @@
 /* 80 + 80 MHz Operating Channel  (revised signalling) */
 #define WLAN_VHTOP_CHWIDTH_REVSIG_80_80  1
 
+#define WLAN_HEOP_FIXED_PARAM_LENGTH       7
+#define WLAN_HEOP_VHTOP_LENGTH             3
+#define WLAN_HEOP_CO_LOCATED_BSS_LENGTH    1
+
+#define WLAN_HEOP_VHTOP_PRESENT_MASK       0x00004000  /* B14 */
+#define WLAN_HEOP_CO_LOCATED_BSS_MASK      0x00008000  /* B15 */
+#define WLAN_HEOP_6GHZ_INFO_PRESENT_MASK   0X00020000  /* B17 */
+
+#define WLAN_HE_6GHZ_CHWIDTH_20           0 /* 20MHz Oper Ch width */
+#define WLAN_HE_6GHZ_CHWIDTH_40           1 /* 40MHz Oper Ch width */
+#define WLAN_HE_6GHZ_CHWIDTH_80           2 /* 80MHz Oper Ch width */
+#define WLAN_HE_6GHZ_CHWIDTH_160_80_80    3 /* 160/80+80 MHz Oper Ch width */
+
 #define WLAN_RATE_VAL              0x7f
 #define WLAN_BASIC_RATE_MASK       0x80
 
@@ -218,6 +231,20 @@
 	WLAN_VHTOP_CHWIDTH_REVSIG_80_80) && \
 	((vhtop)->vht_op_ch_freq_seg2 != 0) && \
 	(abs((vhtop)->vht_op_ch_freq_seg2 - (vhtop)->vht_op_ch_freq_seg1) > 8))
+
+/* Check if channel width is HE160 in HE 6ghz params */
+#define WLAN_IS_HE160(he_6g_param) (((he_6g_param)->width == \
+	WLAN_HE_6GHZ_CHWIDTH_160_80_80) && \
+	((he_6g_param)->chan_freq_seg1 != 0) && \
+	(abs((he_6g_param)->chan_freq_seg1 - \
+	(he_6g_param)->chan_freq_seg0) == 8))
+
+/* Check if channel width is HE80p80 in HE 6ghz params */
+#define WLAN_IS_HE80_80(he_6g_param) (((he_6g_param)->width == \
+	WLAN_HE_6GHZ_CHWIDTH_160_80_80) && \
+	((he_6g_param)->chan_freq_seg1 != 0) && \
+	(abs((he_6g_param)->chan_freq_seg1 - \
+	(he_6g_param)->chan_freq_seg0) > 8))
 
 #define LE_READ_2(p) \
 	((uint16_t)\
@@ -398,6 +425,7 @@ enum element_ie {
 	WLAN_ELEMID_AID              = 197,
 	WLAN_ELEMID_QUIET_CHANNEL    = 198,
 	WLAN_ELEMID_OP_MODE_NOTIFY   = 199,
+	WLAN_ELEMID_REDUCED_NEIGHBOR_REPORT = 201,
 	WLAN_ELEMID_VENDOR           = 221,
 	WLAN_ELEMID_FILS_INDICATION  = 240,
 	WLAN_ELEMID_RSNXE            = 244,
@@ -410,6 +438,7 @@ enum element_ie {
  * @WLAN_EXTN_ELEMID_HECAP:  HE capabilities IE
  * @WLAN_EXTN_ELEMID_HEOP:   HE Operation IE
  * @WLAN_EXTN_ELEMID_MUEDCA: MU-EDCA IE
+ * @WLAN_EXTN_ELEMID_HE_6G_CAP: HE 6GHz Band Capabilities IE
  * @WLAN_EXTN_ELEMID_SRP:    spatial reuse parameter IE
  */
 enum extn_element_ie {
@@ -418,7 +447,165 @@ enum extn_element_ie {
 	WLAN_EXTN_ELEMID_HEOP        = 36,
 	WLAN_EXTN_ELEMID_MUEDCA      = 38,
 	WLAN_EXTN_ELEMID_SRP         = 39,
+	WLAN_EXTN_ELEMID_HE_6G_CAP   = 59,
 	WLAN_EXTN_ELEMID_ESP         = 11,
+};
+
+/**
+ * enum wlan_status_code - wlan status codes
+ * (IEEE Std 802.11-2016, 9.4.1.9, Table 9-46)
+ * @STATUS_SUCCESS: Success full
+ * @STATUS_UNSPECIFIED_FAILURE: Unspecified failure.
+ * @STATUS_TDLS_WAKEUP_REJECT: TDLS wakeup schedule rejected but alternative
+ * schedule provided.
+ * @STATUS_SECURITY_DISABLED: Security disabled.
+ * @STATUS_UNACCEPTABLE_LIFETIME: Unacceptable lifetime.
+ * @STATUS_NOT_IN_SAME_BSS: Not in same BSS.
+ * @STATUS_CAPS_UNSUPPORTED: Cannot support all requested capabilities in the
+ * Capability Information field.
+ * @STATUS_REASSOC_NO_ASSOC: Reassociation denied due to inability to confirm
+ * that association exists.
+ * @STATUS_ASSOC_DENIED_UNSPEC: Association denied due to reason outside the
+ * scope of this standard.
+ * @STATUS_NOT_SUPPORTED_AUTH_ALG: Responding STA does not support the specified
+ * authentication algorithm.
+ * @STATUS_UNKNOWN_AUTH_TRANSACTION: Received an Authentication frame with
+ * authentication transaction sequence number out of expected sequence.
+ * @STATUS_CHALLENGE_FAIL: Authentication rejected because of challenge failure.
+ * @STATUS_AUTH_TIMEOUT: Authentication rejected due to timeout waiting for next
+ * frame in sequence.
+ * @STATUS_AP_UNABLE_TO_HANDLE_NEW_STA: Association denied because AP is unable
+ * to handle additional associated STAs.
+ * @STATUS_ASSOC_DENIED_RATES: Association denied due to requesting STA not
+ * supporting all of the data rates in the BSSBasicRateSet parameter,
+ * the Basic HT-MCS Set field of the HT Operation parameter, or the Basic
+ * VHT-MCS and NSS Set field in the VHT Operation parameter.
+ * @STATUS_ASSOC_DENIED_NOSHORT: Association denied due to requesting
+ * STA not supporting the short preamble option.
+ * @STATUS_SPEC_MGMT_REQUIRED: Association request rejected because Spectrum
+ * Management capability is required.
+ * @STATUS_PWR_CAPABILITY_NOT_VALID: Association request rejected because the
+ * information in the Power Capability element is unacceptable.
+ * @STATUS_SUPPORTED_CHANNEL_NOT_VALID: Association request rejected because
+ * the information in the Supported Channels element is unacceptable.
+ * @STATUS_ASSOC_DENIED_NO_SHORT_SLOT_TIME: Association denied due to requesting
+ * STA not supporting the Short Slot Time option.
+ * @STATUS_ASSOC_DENIED_NO_HT: Association denied because the requesting STA
+ * does not support HT features.
+ * @STATUS_R0KH_UNREACHABLE: R0KH unreachable.
+ * @STATUS_ASSOC_DENIED_NO_PCO: Association denied because the requesting STA
+ * does not support the phased coexistence operation (PCO) transition time
+ * required by the AP.
+ * @STATUS_ASSOC_REJECTED_TEMPORARILY: Association request rejected temporarily,
+ * try again later.
+ * @STATUS_ROBUST_MGMT_FRAME_POLICY_VIOLATION: Robust management frame policy
+ * violation.
+ * @STATUS_UNSPECIFIED_QOS_FAILURE: Unspecified, QoS-related failure.
+ * @STATUS_DENIED_INSUFFICIENT_BANDWIDTH: Association denied because QoS AP or
+ * PCP has insufficient bandwidth to handle another QoS STA.
+ * @STATUS_DENIED_POOR_CHANNEL_CONDITIONS: Association denied due to excessive
+ * frame loss rates and/or poor conditions on current operating channel.
+ * @STATUS_DENIED_QOS_NOT_SUPPORTED: Association (with QoS BSS) denied because
+ * the requesting STA does not support the QoS facility.
+ * @STATUS_REQUEST_DECLINED: The request has been declined.
+ * @STATUS_INVALID_PARAMETERS: The request has not been successful as one
+ * or more parameters have invalid values.
+ * @STATUS_REJECTED_WITH_SUGGESTED_CHANGES: The allocation or TS has not been
+ * created because the request cannot be honored; however, a suggested TSPEC/DMG
+ * TSPEC is provided so that the initiating STA can attempt to set another
+ * allocation or TS with the suggested changes to the TSPEC/DMG TSPEC
+ * @STATUS_INVALID_IE: Invalid element, i.e., an element defined in this
+ * standard for which the content does not meet the specifications in Clause 9.
+ * @STATUS_GROUP_CIPHER_NOT_VALID: Invalid group cipher.
+ * @STATUS_PAIRWISE_CIPHER_NOT_VALID: Invalid pairwise cipher.
+ * @STATUS_AKMP_NOT_VALID: Invalid AKMP.
+ * @STATUS_UNSUPPORTED_RSN_IE_VERSION: Unsupported RSNE version.
+ * @STATUS_INVALID_RSN_IE_CAPAB: Invalid RSNE capabilities.
+ * @STATUS_CIPHER_REJECTED_PER_POLICY: Cipher suite rejected because of security
+ * policy.
+ * @STATUS_TS_NOT_CREATED: The TS or allocation has not been created; however,
+ * the HC or PCP might be capable of creating a TS or allocation, in response to
+ * a request, after the time indicated in the TS Delay element.
+ * @STATUS_DIRECT_LINK_NOT_ALLOWED: Direct link is not allowed in the BSS by
+ * policy.
+ * @STATUS_DEST_STA_NOT_PRESENT: The Destination STA is not present within this
+ * BSS.
+ * @STATUS_DEST_STA_NOT_QOS_STA: The Destination STA is not a QoS STA.
+ * @STATUS_ASSOC_DENIED_LISTEN_INT_TOO_LARGE: Association denied because the
+ * listen interval is too large.
+ * @STATUS_INVALID_FT_ACTION_FRAME_COUNT: Invalid FT Action frame count.
+ * @STATUS_INVALID_PMKID: Invalid pairwise master key identifier (PMKID).
+ *
+ * Internal status codes: Add any internal status code just after
+ * STATUS_PROP_START and decrease the value of STATUS_PROP_START
+ * accordingly.
+ *
+ * @STATUS_PROP_START: Start of prop status codes.
+ * @STATUS_NO_NETWORK_FOUND: No network found
+ * @STATUS_AUTH_TX_FAIL: Failed to sent AUTH on air
+ * @STATUS_AUTH_NO_ACK_RECEIVED: No ack received for Auth tx
+ * @STATUS_AUTH_NO_RESP_RECEIVED: No Auth response for Auth tx
+ * @STATUS_ASSOC_TX_FAIL: Failed to sent Assoc on air
+ * @STATUS_ASSOC_NO_ACK_RECEIVED: No ack received for Assoc tx
+ * @STATUS_ASSOC_NO_RESP_RECEIVED: No Assoc response for Assoc tx
+ */
+enum wlan_status_code {
+	STATUS_SUCCESS = 0,
+	STATUS_UNSPECIFIED_FAILURE = 1,
+	STATUS_TDLS_WAKEUP_REJECT = 3,
+	STATUS_SECURITY_DISABLED = 5,
+	STATUS_UNACCEPTABLE_LIFETIME = 6,
+	STATUS_NOT_IN_SAME_BSS = 7,
+	STATUS_CAPS_UNSUPPORTED = 10,
+	STATUS_REASSOC_NO_ASSOC = 11,
+	STATUS_ASSOC_DENIED_UNSPEC = 12,
+	STATUS_NOT_SUPPORTED_AUTH_ALG = 13,
+	STATUS_UNKNOWN_AUTH_TRANSACTION = 14,
+	STATUS_CHALLENGE_FAIL = 15,
+	STATUS_AUTH_TIMEOUT = 16,
+	STATUS_AP_UNABLE_TO_HANDLE_NEW_STA = 17,
+	STATUS_ASSOC_DENIED_RATES = 18,
+	STATUS_ASSOC_DENIED_NOSHORT = 19,
+	STATUS_SPEC_MGMT_REQUIRED = 22,
+	STATUS_PWR_CAPABILITY_NOT_VALID = 23,
+	STATUS_SUPPORTED_CHANNEL_NOT_VALID = 24,
+	STATUS_ASSOC_DENIED_NO_SHORT_SLOT_TIME = 25,
+	STATUS_ASSOC_DENIED_NO_HT = 27,
+	STATUS_R0KH_UNREACHABLE = 28,
+	STATUS_ASSOC_DENIED_NO_PCO = 29,
+	STATUS_ASSOC_REJECTED_TEMPORARILY = 30,
+	STATUS_ROBUST_MGMT_FRAME_POLICY_VIOLATION = 31,
+	STATUS_UNSPECIFIED_QOS_FAILURE = 32,
+	STATUS_DENIED_INSUFFICIENT_BANDWIDTH = 33,
+	STATUS_DENIED_POOR_CHANNEL_CONDITIONS = 34,
+	STATUS_DENIED_QOS_NOT_SUPPORTED = 35,
+	STATUS_REQUEST_DECLINED = 37,
+	STATUS_INVALID_PARAMETERS = 38,
+	STATUS_REJECTED_WITH_SUGGESTED_CHANGES = 39,
+	STATUS_INVALID_IE = 40,
+	STATUS_GROUP_CIPHER_NOT_VALID = 41,
+	STATUS_PAIRWISE_CIPHER_NOT_VALID = 42,
+	STATUS_AKMP_NOT_VALID = 43,
+	STATUS_UNSUPPORTED_RSN_IE_VERSION = 44,
+	STATUS_INVALID_RSN_IE_CAPAB = 45,
+	STATUS_CIPHER_REJECTED_PER_POLICY = 46,
+	STATUS_TS_NOT_CREATED = 47,
+	STATUS_DIRECT_LINK_NOT_ALLOWED = 48,
+	STATUS_DEST_STA_NOT_PRESENT = 49,
+	STATUS_DEST_STA_NOT_QOS_STA = 50,
+	STATUS_ASSOC_DENIED_LISTEN_INT_TOO_LARGE = 51,
+	STATUS_INVALID_FT_ACTION_FRAME_COUNT = 52,
+	STATUS_INVALID_PMKID = 53,
+
+	/* Error STATUS code for intenal usage*/
+	STATUS_PROP_START = 65528,
+	STATUS_NO_NETWORK_FOUND = 65528,
+	STATUS_AUTH_TX_FAIL = 65529,
+	STATUS_AUTH_NO_ACK_RECEIVED = 65530,
+	STATUS_AUTH_NO_RESP_RECEIVED = 65531,
+	STATUS_ASSOC_TX_FAIL = 65532,
+	STATUS_ASSOC_NO_ACK_RECEIVED = 65533,
+	STATUS_ASSOC_NO_RESP_RECEIVED = 65534,
 };
 
 #define WLAN_OUI_SIZE 4
@@ -978,6 +1165,26 @@ struct wlan_ie_vhtop {
 	uint8_t vht_op_ch_freq_seg1;
 	uint8_t vht_op_ch_freq_seg2;
 	uint16_t vhtop_basic_mcs_set;
+} qdf_packed;
+
+/**
+ * struct he_oper_6g_param: 6 Ghz params for HE
+ * @primary_channel: HE 6GHz Primary channel number
+ * @width: HE 6GHz BSS Channel Width
+ * @duplicate_beacon: HE 6GHz Duplicate beacon field
+ * @reserved: Reserved bits
+ * @chan_freq_seg0: HE 6GHz Channel Centre Frequency Segment 0
+ * @chan_freq_seg1: HE 6GHz Channel Centre Frequency Segment 1
+ * @minimum_rate: HE 6GHz Minimum Rate
+ */
+struct he_oper_6g_param {
+	uint8_t primary_channel;
+	uint8_t width:2,
+		duplicate_beacon:1,
+		reserved:5;
+	uint8_t chan_freq_seg0;
+	uint8_t chan_freq_seg1;
+	uint8_t minimum_rate;
 } qdf_packed;
 
 /**
