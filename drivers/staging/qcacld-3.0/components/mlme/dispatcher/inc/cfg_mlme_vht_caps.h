@@ -1,6 +1,5 @@
 /*
  * Copyright (c) 2012-2020 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -114,16 +113,16 @@
 #define CFG_VHT_RX_SUPP_DATA_RATE CFG_UINT( \
 		"rx_supp_data_rate", \
 		0, \
-		780, \
-		780, \
+		866, \
+		866, \
 		CFG_VALUE_OR_DEFAULT, \
 		"VHT RX SUPP DATA RATE")
 
 #define CFG_VHT_TX_SUPP_DATA_RATE CFG_UINT( \
 		"tx_supp_data_rate", \
 		0, \
-		780, \
-		780, \
+		866, \
+		866, \
 		CFG_VALUE_OR_DEFAULT, \
 		"VHT TX SUPP DATA RATE")
 
@@ -598,6 +597,26 @@
 			0, \
 			"Enable subfee in vendor vht ie")
 
+/*
+ * <ini>
+ * enable_vhtmcs_10_11_support - Enable/Disable vht mcs 10, 11 support
+ * @Min: 0
+ * @Max: 1
+ * @Default: 1
+ *
+ * This ini is  used to enable/disable mcs 10, 11 support.
+ *
+ * Related: NA
+ *
+ * Usage: Internal
+ *
+ * </ini>
+ */
+#define CFG_ENABLE_VHT_MCS_10_11 CFG_INI_BOOL( \
+		"enable_vhtmcs_10_11_support", \
+		1, \
+		"Enable/Disable vht mcs 10, 11 support")
+
 #define CFG_VHT_CAPS_ALL \
 	CFG(CFG_VHT_SUPP_CHAN_WIDTH) \
 	CFG(CFG_VHT_SU_BEAMFORMEE_CAP) \
@@ -631,6 +650,7 @@
 	CFG(CFG_ENABLE_SUBFEE_IN_VENDOR_VHTIE) \
 	CFG(CFG_TX_BF_CAP) \
 	CFG(CFG_AS_CAP) \
-	CFG(CFG_DISABLE_LDPC_WITH_TXBF_AP)
+	CFG(CFG_DISABLE_LDPC_WITH_TXBF_AP) \
+	CFG(CFG_ENABLE_VHT_MCS_10_11)
 
 #endif /* __CFG_MLME_VHT_CAPS_H */
