@@ -128,15 +128,15 @@ struct fpc1020_data {
 
 #ifdef CONFIG_MACH_XIAOMI_CLOVER
 static irqreturn_t fpc1020_irq_handler(int irq, void *handle);
-static int fpc1020_request_named_gpio(struct fpc1020_data *fpc1020,
+static inline int fpc1020_request_named_gpio(struct fpc1020_data *fpc1020,
 				      const char *label, int *gpio);
 #endif
 static struct kernfs_node *soc_symlink = NULL;
 #ifdef CONFIG_MACH_XIAOMI_CLOVER
-static int hw_reset(struct fpc1020_data *fpc1020);
+static inline int hw_reset(struct fpc1020_data *fpc1020);
 #endif
 
-static int vreg_setup(struct fpc1020_data *fpc1020, const char *name,
+static inline int vreg_setup(struct fpc1020_data *fpc1020, const char *name,
 		      bool enable)
 {
 	size_t i;
@@ -225,7 +225,7 @@ static DEVICE_ATTR(clk_enable, 0200, NULL, clk_enable_set);
  * @see pctl_names
  * @see fpc1020_probe
  */
-static int select_pin_ctl(struct fpc1020_data *fpc1020, const char *name)
+static inline int select_pin_ctl(struct fpc1020_data *fpc1020, const char *name)
 {
 	size_t i;
 	int rc;
@@ -293,7 +293,7 @@ static ssize_t regulator_enable_set(struct device *dev,
 }
 static DEVICE_ATTR(regulator_enable, 0200, NULL, regulator_enable_set);
 
-static int hw_reset(struct fpc1020_data *fpc1020)
+static inline int hw_reset(struct fpc1020_data *fpc1020)
 {
 	int irq_gpio;
 	struct device *dev = fpc1020->dev;
@@ -338,7 +338,7 @@ static ssize_t hw_reset_set(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR(hw_reset, 0200, NULL, hw_reset_set);
 
-static void config_irq(struct fpc1020_data *fpc1020, bool enabled)
+static inline void config_irq(struct fpc1020_data *fpc1020, bool enabled)
 {
 	static bool irq_enabled = true;
 
@@ -371,7 +371,7 @@ static void config_irq(struct fpc1020_data *fpc1020, bool enabled)
  * @note This function will not send any commands to the sensor it will only
  *       control it "electrically".
  */
-static int device_prepare(struct fpc1020_data *fpc1020, bool enable)
+static inline int device_prepare(struct fpc1020_data *fpc1020, bool enable)
 {
 	int rc;
 
@@ -690,7 +690,7 @@ static void notification_work(struct work_struct *work)
 }
 #endif
 
-static irqreturn_t fpc1020_irq_handler(int irq, void *handle)
+static inline irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 {
 	struct fpc1020_data *fpc1020 = handle;
 
@@ -717,7 +717,7 @@ static irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 	return IRQ_HANDLED;
 }
 
-static int fpc1020_request_named_gpio(struct fpc1020_data *fpc1020,
+static inline int fpc1020_request_named_gpio(struct fpc1020_data *fpc1020,
 				      const char *label, int *gpio)
 {
 	struct device *dev = fpc1020->dev;
@@ -741,7 +741,7 @@ static int fpc1020_request_named_gpio(struct fpc1020_data *fpc1020,
 }
 
 #ifdef CONFIG_MACH_XIAOMI_CLOVER
-static int fpc_fb_notif_callback(struct notifier_block *nb, unsigned long val,
+static inline int fpc_fb_notif_callback(struct notifier_block *nb, unsigned long val,
 				 void *data)
 {
 	struct fpc1020_data *fpc1020 =
@@ -790,7 +790,7 @@ static struct notifier_block fpc_notif_block = {
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_COMMON
-static int input_connect(struct input_handler *handler,
+static inline int input_connect(struct input_handler *handler,
 		struct input_dev *dev, const struct input_device_id *id)
 {
 	int rc;
@@ -827,7 +827,7 @@ err_input_register_handle:
 	return rc;
 }
 
-static bool input_filter(struct input_handle *handle, unsigned int type,
+static inline bool input_filter(struct input_handle *handle, unsigned int type,
 						 unsigned int code, int value)
 {
 	if (code == KEY_HOME) {
@@ -836,7 +836,7 @@ static bool input_filter(struct input_handle *handle, unsigned int type,
 	return false;
 }
 
-static void input_disconnect(struct input_handle *handle)
+static inline void input_disconnect(struct input_handle *handle)
 {
 	input_close_device(handle);
 	input_unregister_handle(handle);
@@ -852,7 +852,7 @@ static const struct input_device_id ids[] = {
 };
 #endif
 
-static int fpc1020_probe(struct platform_device *pdev)
+static inline int fpc1020_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	int rc = 0;
@@ -1021,7 +1021,7 @@ exit:
 	return rc;
 }
 
-static int fpc1020_remove(struct platform_device *pdev)
+static inline int fpc1020_remove(struct platform_device *pdev)
 {
 	struct fpc1020_data *fpc1020 = platform_get_drvdata(pdev);
 
